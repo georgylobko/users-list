@@ -7,6 +7,12 @@ module.exports = {
   secret: 'mysecret',
   root: process.cwd(),
   templatesRoot: path.join(process.cwd(), 'templates'),
+  crypto: {
+    hash: {
+      length: 128,
+      iterations: 10
+    }
+  },
   mongodb: {
     uri: 'mongodb://localhost/users_app'
   }

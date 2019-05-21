@@ -1,4 +1,8 @@
 const mongoose = require('../libs/mongoose');
+const crypto = require('crypto');
+const config = require('config');
+
+const publicFields = ['email', 'displayName'];
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -18,9 +22,51 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: 'У пользователя должно быть имя',
     unique: 'Такое имя уже существует'
+  },
+  passwordHash: {
+    type: String,
+    required: true
+  },
+  salt: {
+    required: true,
+    type: String
   }
 }, {
   timestamps: true,
 });
+
+function generatePassword(salt, password) {
+  return new Promise((resolve, reject) => {
+    crypto.pbkdf2(
+      password, salt,
+      config.get('crypto.hash.iterations'), config.get('crypto.hash.length'),
+      'sha512',
+      (err, key) => {
+        if (err) return reject(err);
+        resolve(key.toString('hex'));
+      }
+    );
+  });
+}
+
+userSchema.methods.setPassword = async function setPassword(password) {
+  if (password !== undefined) {
+    if (password.length < 4) {
+      throw new Error('Пароль должен быть минимум 4 символа.');
+    }
+  }
+
+  this.salt = crypto.randomBytes(config.get('crypto.hash.length')).toString('hex');
+  this.passwordHash = await generatePassword(this.salt, password);
+};
+
+userSchema.methods.checkPassword = async function(password) {
+  if (!password) return false;
+
+  const hash = await generatePassword(this.salt, password);
+  return hash === this.passwordHash;
+};
+
+userSchema.statics.publicFields = publicFields;
 
 module.exports = mongoose.model('User', userSchema);
