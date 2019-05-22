@@ -1,4 +1,3 @@
-const Koa = require('koa');
 const Router = require('koa-router');
 const pick = require('lodash').pick;
 

@@ -1,6 +1,11 @@
+const Router = require('koa-router');
+const config = require('config');
+
 const passport = require('../libs/passport');
 
-exports.post = async (ctx, next) => {
+const router = new Router();
+
+router.post('/login', async (ctx, next) => {
   await passport.authenticate('local', async function(err, user, info) {
     if (err) throw err;
 
@@ -12,5 +17,12 @@ exports.post = async (ctx, next) => {
       ctx.body = info;
     }
   })(ctx, next);
-};
+});
 
+router.get('/login/vkontakte', passport.authenticate('vkontakte', config.get('providers.vk.passportOptions')));
+router.get('/oauth/vkontakte', passport.authenticate('vkontakte', {
+  successRedirect: '/',
+  failureRedirect: '/'
+}));
+
+module.exports = router;

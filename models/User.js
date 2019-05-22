@@ -25,12 +25,14 @@ const userSchema = new mongoose.Schema({
   },
   passwordHash: {
     type: String,
-    required: true
   },
   salt: {
-    required: true,
     type: String
-  }
+  },
+  providers: [{
+    id: String,
+    profile: {}
+  }]
 }, {
   timestamps: true,
 });
