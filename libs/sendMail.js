@@ -11,11 +11,11 @@ const SMTPTransport = require('nodemailer-smtp-transport');
 const transportEngine = (process.env.NODE_ENV === 'test' || process.env.MAILER_DISABLED)
   ? stubTransport()
   : new SMTPTransport({
-    service: 'Gmail',
+    service: 'Yandex',
     debug: true,
     auth: {
-      user: config.get('mailer.gmail.user'),
-      pass: config.get('mailer.gmail.password')
+      user: config.get('mailer.yandex.user'),
+      pass: config.get('mailer.yandex.password')
     }
   });
 
@@ -27,16 +27,15 @@ module.exports = async function sendMail(options) {
   const sender = config.mailer.senders[options.from || 'default'];
   const locals = { sender };
   
-  
   const html = pug.renderFile(
     path.join(config.get('templatesRoot'), 'email', `${options.template}.pug`),
-    Object.assign({}, locals, {link: options.link})
+    Object.assign({}, locals, { link: options.link })
   );
 
   const message = {
     from: {
-      address: sender.email,
-      name: sender.name,
+      address: sender.fromEmail,
+      name: sender.fromName,
     },
     html: juice(html), // inline styles
     to: {

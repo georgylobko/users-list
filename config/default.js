@@ -1,8 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  // secret data can be moved to env variables
-  // or a separate config
+  server: {
+    host: 'http://localhost',
+    port: 3000,
+  },
   port: 3000,
   secret: 'mysecret',
   root: process.cwd(),
@@ -27,13 +29,13 @@ module.exports = {
     }
   },
   mailer: {
-    gmail: {
-      user: 'mr.georgy93@gmail.com',
-      password: ''
+    yandex: {
+      user: 'questymark@yandex.ru',
+      password: 'questionmark93'
     },
     senders:  {
       default:  {
-        fromEmail: 'mr.georgy93@gmail.com',
+        fromEmail: 'questymark@yandex.ru',
         fromName:  'Georgy Lobko',
         signature: "<em>С уважением,<br>Георгий Лобко</em>"
       },
